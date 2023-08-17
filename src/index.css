@@ -11,3 +11,53 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.container {
+  max-width: 800px;
+  width: 100%;
+  margin: 50px auto;
+}
+
+.filter-section {
+  margin-top: 50px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.filter-box {
+  padding: 5px;
+}
+
+.query-input-box {
+  width: 100%;
+}
+
+.list-movies {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+
+.card-figure {
+  margin: 0;
+  border: 5px solid #ccc;
+  border-radius: 4px;
+}
+
+.card-figure img {
+  object-fit: contain;
+}
+
+.card-caption {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+  margin-top: 5px;
+  padding: 10px;
+}
