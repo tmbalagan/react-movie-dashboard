@@ -8,6 +8,7 @@ Production Mode - `npm run build`
  Query - `genre=drama,year=1990`
  
  Query - `actors=brad`
+ 
  Query - `country=uk`
 
 
