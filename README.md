@@ -6,6 +6,7 @@ Production Mode - `npm run build`
 
 ### Filter Movies (GET)
  Query - `genre=drama,year=1990`
+ 
  Query - `actors=brad`
  Query - `country=uk`
 
