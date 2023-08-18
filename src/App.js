@@ -2,10 +2,15 @@ import './App.css';
 import { useState } from 'react';
 import movieJson from './movies.json'
 import keyMapJson from './key-map.json'
+import MovieList from './components/MovieList'
+import SelectComponent from './components/SelectComponent'
+import SearchInput from './components/SearchInput';
+
 function App() {
   const [movies, setMovieList] = useState(movieJson)
   const [value, setValue] = useState("get")
   const [query, setQuery] = useState("")
+
 
   const handleSelect = (e) => {
     // The handleSelect function is called when the user selects a value from the dropdown menu.
@@ -27,8 +32,8 @@ function App() {
   const filterMovieList = (query = {}) => {
     //  The filterMovieList function gets the value of the user's selection from the dropdown list to filter movies from the query.
 
-    var filteredMovies = []
-    var groupTitleWise = {}
+    let filteredMovies = []
+    let groupTitleWise = {}
     movieJson.map((movie) => {
       for (const key in query) {
         if (query[key] != undefined && movie[key] != undefined) {
@@ -51,24 +56,45 @@ function App() {
   }
 
   const rankMovieList = (query = {}) => {
+    let groupNotRankingMovies = []
+    let defaultMovieRanking = []
+    let combineArray = []
     //  The rankMovieList function gets the value of the user's selection from the dropdown list to filter movies from the query.
 
     // query always title and rank
-    const filteredMovies = movieJson.filter((movie) => {
-      var title = movie["Title"]
+    for (let i = 1; i <= movieJson.length; i++) {
+      defaultMovieRanking.push(i)
+    }
+
+    let queryWiseRankedMovies = movieJson.filter((movie) => {
+      let title = movie["Title"]
 
       // check if the title is present in the movie and add the rank value to it.
       if (query[title]) {
-        movie["Rank"] = query[title]['Rank']
+        movie["Rank"] = parseInt(query[title]['Rank'])
+        // filter is used to remove ranks that are present in the "defaultMovieRanking" array. This is used to assign movies that have not been ranked.
+        defaultMovieRanking = defaultMovieRanking.filter(function (rank) {
+          return rank !== movie["Rank"]
+        })
         return true
+      } else {
+        groupNotRankingMovies.push(movie)
       }
-    }).sort((a, b) => {
+    })
+
+    // Assign the values of the "defaultMovieRanking" array, not the movie ranking
+    groupNotRankingMovies = groupNotRankingMovies.filter((movie, index) => {
+      movie["Rank"] = defaultMovieRanking[index]
+      return true
+    })
+
+    // Combine user ranking and custom ranking
+    combineArray = [...groupNotRankingMovies, ...queryWiseRankedMovies].sort((a, b) => {
       // Sort movies by rank
       return a.Rank - b.Rank
     })
 
-    // Set movies from filteredMovies
-    setMovieList(filteredMovies)
+    setMovieList(combineArray)
   }
 
   const handleKeyDown = (e) => {
@@ -98,14 +124,15 @@ function App() {
 
         for (const titleRankPair of titleRankPairs) {
           const [key, value] = titleRankPair.split("=");
-          if (key != undefined && value != undefined) {
-            if (key == "title")
+          if ((key != undefined && value != undefined) && keyMapJson[key]) {
+            if (key == "title") {
               // movie key mapping and replace single to double quotes
               var object = { [keyMapJson[key]]: (value).replace(/'/g, "") }
-            else
+            } else if (key == "rank") {
               object[keyMapJson[key]] = value
+            }
 
-            if (object.Title && object.Rank) {
+            if (object && object.Title && object.Rank) {
               // Group title and rank
               params[object["Title"]] = object
             }
@@ -124,23 +151,10 @@ function App() {
   return (
     <div className="container">
       <section className='filter-section'>
-        <select value={value} onChange={handleSelect} className="filter-box">
-          <option value="get">GET</option>
-          <option value="rank">Rank</option>
-        </select>
-        <input placeholder='Enter your query' className='filter-box query-input-box' value={query} onChange={handleSearch} onKeyDown={handleKeyDown} />
+        <SelectComponent value={value} handleSelect={handleSelect} />
+        <SearchInput value={query} handleSearch={handleSearch} handleKeyDown={handleKeyDown} />
       </section>
-      <section className='list-movies'>
-        {movies.map((movie) => (
-          <div className='card' key={movie.Title}>
-            <figure className='card-figure'>
-              <img src={movie.Poster} width="210" height="315" loading='lazy' alt={movie.Title} />
-              <figcaption className='card-caption'>{movie.Title}, {movie.Year}</figcaption>
-            </figure>
-          </div>
-        ))}
-        {movies.length == 0 && <p>Could not matching for given criteria, Please modify your search</p>}
-      </section>
+      <MovieList movies={movies} />
     </div>
   );
 }
