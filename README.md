@@ -1,5 +1,6 @@
 ## Run Scripts
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app)
+
 Dev Mode - `npm start`
 Production Mode - `npm run build`
 
